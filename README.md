@@ -13,3 +13,6 @@ To start the backend server, cd to the backend folder and run:
 Then start up the React front end by running this from the project root directory:
 ### `npm start`
 
+## Oh, and
+
+be sure to hunt down all of the IP addresses and change them to whatever you want them to be. If there's someone out there who wants to turn those into configurable items, I'd be down.
