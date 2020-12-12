@@ -11,7 +11,7 @@ To start the backend server, cd to the backend folder and run:
 ### `nodemon server`
 
 Then start up the React front end by running this from the project root directory:
-### `npm start'
+### `npm start`
 
 In the project directory,  run:
 
