@@ -9,10 +9,11 @@ import MyEditor from './components/editor.component';
 import DraftsList from './components/drafts-list.component';
 import TrashedDraftsList from './components/trash_bin.component';
 
+
 function App() {
   return (
       <Router>
-      <div className="container">
+      <div className="container" id="content">
         <MainNavbar />
         <br />
         <Route path="/" exact component={DraftsList} />

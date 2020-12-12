@@ -1,11 +1,12 @@
 import React, {Component}from 'react';
-import {MdSave, MdFolderOpen, MdCreate, MdCheckBox, MdCheckBoxOutlineBlank, MdFileDownload } from 'react-icons/md';
+import {MdSave, MdFolderOpen, MdCreate, MdCheckBox, MdCheckBoxOutlineBlank, MdFileDownload, MdFullscreen, MdFullscreenExit } from 'react-icons/md';
 import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw } from 'draft-js';
 import Button from 'react-bootstrap/Button'
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import axios from 'axios';
 
 import 'draft-js/dist/Draft.css';
+
 
 export default class MyEditor extends Component {
     constructor(props) {
@@ -25,6 +26,8 @@ export default class MyEditor extends Component {
             , auto_save : true
             , dirty : false
             , saving : false
+            // state elements for the viewport
+            , full_screen : false
         };
 
         this.onChange = editorState => {
@@ -155,6 +158,43 @@ export default class MyEditor extends Component {
     }
 
 
+    render_fullscreen = () => { // Will revisit this in a later version
+        if(this.state.full_screen) {
+            return(
+                <Button variant="dark" onClick={this.toggle_fullscreen}>
+                    <MdFullscreenExit /> Leave Full Screen
+                </Button>
+            )
+        } else {
+            return(
+                <Button variant="dark" onClick={this.toggle_fullscreen}>
+                    <MdFullscreen /> Go Full Screen
+                </Button>
+            )
+        }
+
+    }
+
+    toggle_fullscreen = () => {
+        const element = document.getElementById('editor');
+        if(!this.state.full_screen) {
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.webkitRequestFullscreen) {
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) {
+                element.msRequestFullscreen()
+            }
+        } else {
+            if(document.exitFullscreen) document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+            else if (document.msExitFullScreen) document.msExitFullScreen();
+        }
+        this.setState({ full_screen : !this.state.full_screen });
+        
+    }
+
+
     getWordCount = () => {
         const current_content = this.state.editorState.getCurrentContent().getPlainText(' ');
         let counter = 0;
@@ -197,6 +237,10 @@ export default class MyEditor extends Component {
         });
     }
 
+    handleHTMLDownload = () => {
+
+    }
+
     handleDownload = () => {
         const element = document.createElement("a");
         const contents = 
@@ -220,48 +264,49 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
 
     
     render() {
-        return (
-            <div className="container-fluid">
-                <div className="btn-group">
-                    <Button href="/write" variant="dark"><MdCreate /> New</Button>
-                    {this.render_save()}
-                    <Button onClick={this.toggle_auto_save} variant={(this.state.auto_save) ? "primary" : "danger"} >
-                        {this.render_auto_save()} Autosave
-                    </Button>
-                    <Button variant="dark" href='/'><MdFolderOpen /> Open</Button>
-                    <Button onClick={this.handleDownload} variant="dark"><MdFileDownload /> Download</Button>
-                </div> 
-                <div className="mt-2 form-row">
-                    <div className="form-group col-md-8">
-                            <label>Give your materpiece a h*ckin description </label>
-                            <input type="text"
-                                required
-                                className="form-control"
-                                value={this.state.description}
-                                onChange={this.handleDescriptionChange}
-                                placeholder="Go ahead and type. It's kay."
-                            />
+        return ( 
+            <div className="container-fluid bg-light text-dark" id="editor">
+                    <div className="btn-group">
+                        <Button href="/write" variant="dark"><MdCreate /> New</Button>
+                        {this.render_save()}
+                        <Button onClick={this.toggle_auto_save} variant={(this.state.auto_save) ? "primary" : "danger"} >
+                            {this.render_auto_save()} Autosave
+                        </Button>
+                        <Button variant="dark" href='/'><MdFolderOpen /> Open</Button>
+                        {this.render_fullscreen()}
+                        <Button onClick={this.handleDownload} variant="dark"><MdFileDownload /> Download</Button>
+                    </div> 
+                    <div className="mt-2 form-row">
+                        <div className="form-group col-md-8">
+                                <label>Give your materpiece a h*ckin description </label>
+                                <input type="text"
+                                    required
+                                    className="form-control"
+                                    value={this.state.description}
+                                    onChange={this.handleDescriptionChange}
+                                    placeholder="Go ahead and type. It's kay."
+                                />
+                            </div>
+                            <div className="form-group col-md-4">
+                                <label>How many words in this jam?</label>
+                                <input type="text"
+                                    required
+                                    className="form-control"
+                                    value={this.state.target_word_count}
+                                    onChange={this.handleTargetWordCountChange}
+                                />
+                            </div>
                         </div>
-                        <div className="form-group col-md-4">
-                            <label>How many words in this jam?</label>
-                            <input type="text"
-                                required
-                                className="form-control"
-                                value={this.state.target_word_count}
-                                onChange={this.handleTargetWordCountChange}
-                            />
-                        </div>
-                    </div>
-                
-                <div className="shadow editors container-fluid">
-                        <Editor editorState={this.state.editorState} handleKeyCommand={this.handleKeyCommand} onChange={this.onChange} placeholder="Start h*ckin writing here!!"/>
+                    
+                    <div className="shadow editors container-fluid">
+                            <Editor editorState={this.state.editorState} handleKeyCommand={this.handleKeyCommand} onChange={this.onChange} placeholder="Start h*ckin writing here!!"/>
                     </div>
                     <div className="container pt-3 text-secondary text-right">
                         Word Count: {this.state.current_word_count} / {this.state.target_word_count} ( { Math.round(this.state.percent_complete*100, 2) }%)
                     </div>    
                     <div>
                         <ProgressBar now={Math.round(this.state.percent_complete*100)} label={`${Math.round(this.state.percent_complete*100, 2)}%`} />
-                    </div>            
+                    </div>         
             </div>
         );
     }
