@@ -13,7 +13,3 @@ To start the backend server, cd to the backend folder and run:
 Then start up the React front end by running this from the project root directory:
 ### `npm start`
 
-In the project directory,  run:
-
-### `npm start`
-
