@@ -11,6 +11,7 @@ const draft_schema = new Schema({
     , last_modified_date : { type : Date, required : true }
     , user_email : {type : String, required : true}
     , content : {type : Schema.Types.Mixed, required : true}
+    , date_trashed : { type : Date }
 }, {
     timestamps : true
 });

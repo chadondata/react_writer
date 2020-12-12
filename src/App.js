@@ -6,7 +6,8 @@ import MainNavbar from "./components/navbar.component";
 //import ExercisesList from './components/exercises-list.component';
 import CreateUser from './components/create-user.component';
 import MyEditor from './components/editor.component';
-import DraftsList from './components/drafts-list.component'
+import DraftsList from './components/drafts-list.component';
+import TrashedDraftsList from './components/trash_bin.component';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/user" component={CreateUser} />
         <Route path="/editor/:id" component={MyEditor} /> 
         <Route path="/write" component={MyEditor} />
+        <Route path="/bin" component={ TrashedDraftsList } />
       </div>
     </Router>
 

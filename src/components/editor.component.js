@@ -228,7 +228,7 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
                     <Button onClick={this.toggle_auto_save} variant={(this.state.auto_save) ? "primary" : "danger"} >
                         {this.render_auto_save()} Autosave
                     </Button>
-                    <Button variant="dark"><MdFolderOpen /> Open</Button>
+                    <Button variant="dark" href='/'><MdFolderOpen /> Open</Button>
                     <Button onClick={this.handleDownload} variant="dark"><MdFileDownload /> Download</Button>
                 </div> 
                 <div className="mt-2 form-row">

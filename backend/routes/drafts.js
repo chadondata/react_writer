@@ -9,6 +9,7 @@ router.route('/add').post((req, res) => {
     const last_modified_date = Date(req.body.last_modified_date);
     const user_email = req.body.user_email;
     const content = req.body.content;
+    const date_trashed = null;
 
     const new_draft = new Draft({
         draft_description 
@@ -18,6 +19,7 @@ router.route('/add').post((req, res) => {
         , last_modified_date 
         , user_email 
         , content
+        , date_trashed
     });
 
     new_draft.save()
@@ -29,7 +31,15 @@ router.route('/add').post((req, res) => {
 });
 
 router.route('/').get((req, res) => {
-    Draft.find({}).select("-content")
+    Draft.find({date_trashed : null}).select("-content")
+        .then(drafts => {
+            res.json(drafts);
+        })
+        .catch(err => res.status(400).json('Error ' + err));
+});
+
+router.route('/bin').get((req, res) => {
+    Draft.find({date_trashed : { $ne: null }}).select("-content")
         .then(drafts => {
             res.json(drafts);
         })
@@ -64,6 +74,30 @@ router.route('/update/:id').post((req, res) => {
 
             draft.save()
                 .then(() => res.json('Draft updated'))
+                .catch(err => res.status(400).json('Error: ' + err));
+        })
+        .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/trash/:id').post((req, res) => {
+    Draft.findById(req.params.id)
+        .then(draft => {
+            draft.date_trashed = new Date();
+
+            draft.save()
+                .then(() => res.json('Draft trashed'))
+                .catch(err => res.status(400).json('Error: ' + err));
+        })
+        .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/restore/:id').post((req, res) => {
+    Draft.findById(req.params.id)
+        .then(draft => {
+            draft.date_trashed = null;
+
+            draft.save()
+                .then(() => res.json('Draft restored'))
                 .catch(err => res.status(400).json('Error: ' + err));
         })
         .catch(err => res.status(400).json('Error: ' + err));

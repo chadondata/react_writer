@@ -1,25 +1,21 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import {MdDelete, MdFolderOpen, MdSort } from 'react-icons/md';
-import { IoMdTrash } from 'react-icons/io'
 import Button from 'react-bootstrap/Button';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-import axios from 'axios';
-import { Container, Row, Col } from 'react-bootstrap';
 
-const renderEditTooltip = (props) => (
+import {MdDelete, MdRestore, MdSort} from 'react-icons/md';
+import axios from 'axios';
+
+
+const renderRestoreTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-      Add some words to this, foo.
+      Restore this ish.
     </Tooltip>
   );
 const renderDeleteTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-      Put this in the bin.
+      Delete this fool forever. Sad face.
     </Tooltip>
   );
-
-
-
 
 const Draft= props => (
     <tr>
@@ -34,12 +30,13 @@ const Draft= props => (
         <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.createdAt))} </td>
         <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.updatedAt))} </td>
         <td style={{"textAlign" : "center"}}>
+        
         <OverlayTrigger
             placement="bottom"
             delay={{ show: 250, hide: 400 }}
-            overlay={renderEditTooltip}
+            overlay={renderRestoreTooltip}
         >
-            <Button variant="success" href={"/editor/"+props.draft._id} ><MdFolderOpen /></Button> 
+            <Button variant="success" onClick={() => { props.restoreDraft(props.draft._id) }}> <MdRestore /></Button> 
         </OverlayTrigger>
         
         <OverlayTrigger
@@ -54,10 +51,11 @@ const Draft= props => (
     </tr>
 )
 
-export default class DraftsList extends Component {
+export default class TrashedDraftsList extends Component {
     constructor(props) {
         super(props);
         this.deleteDraft = this.deleteDraft.bind(this);
+        this.restoreDraft = this.restoreDraft.bind(this);
         this.state = { drafts : [] };
         
     }
@@ -67,7 +65,7 @@ export default class DraftsList extends Component {
     }
 
     loadDrafts() {
-        axios.get('http://192.168.1.10:5000/drafts/')
+        axios.get('http://192.168.1.10:5000/drafts/bin/')
             .then(response => {
                 this.setState({ drafts: response.data });
             })
@@ -77,7 +75,7 @@ export default class DraftsList extends Component {
     }
 
     deleteDraft(id) {
-        axios.post('http://192.168.1.10:5000/drafts/trash/' + id)
+        axios.delete('http://192.168.1.10:5000/drafts/' + id)
             .then(res => console.log(res.data))
             .catch((error) => console.log(error));
         
@@ -86,9 +84,20 @@ export default class DraftsList extends Component {
         });
     }
 
+    restoreDraft(id) {
+        axios.post('http://192.168.1.10:5000/drafts/restore/' + id)
+            .then(res => console.log(res.data))
+            .catch((error) => console.log(error));
+        
+        this.setState({ 
+            drafts : this.state.drafts.filter(d => d._id !== id)
+        });
+    }
+
+
     draftsList() {
         return this.state.drafts.map(current_draft => { 
-            return <Draft draft={current_draft} deleteDraft={this.deleteDraft} key={current_draft._id}/>;
+            return <Draft draft={current_draft} deleteDraft={this.deleteDraft} restoreDraft={this.restoreDraft} key={current_draft._id}/>;
         })
     } 
 
@@ -155,13 +164,7 @@ export default class DraftsList extends Component {
     render() {
         return (
             <div>
-                <Container fluid>
-                    <Row>
-                        <Col sm={10}><h3>Your h*ckin ossum drafts</h3></Col>
-                        <Col sm={2}><Button href="/bin" variant='light'><IoMdTrash /> View the Bin</Button></Col>
-                    </Row>
-                </Container>
-                
+                <h3>Here's all the drafts that didn't make the cut.</h3>
                 <div className='table-responsive'>
                     <table className="table">
                         <thead className="thead-light">
