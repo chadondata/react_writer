@@ -1,5 +1,5 @@
-export default ConfigDetails = ()=> {
+export default function ConfigDetails() {
     return({
-        backend_uri : "192.168.86.248:5000"
+        backend_uri : "http://192.168.69.152:5000/"
     })
 }

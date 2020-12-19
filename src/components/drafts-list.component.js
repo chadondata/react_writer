@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import axios from 'axios';
 import { Container, Row, Col } from 'react-bootstrap';
-
+import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint/`
 
 const renderDeleteTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
@@ -14,17 +14,17 @@ const renderDeleteTooltip = (props) => (
 );
 
 const Draft= props => (
-    <tr onClick={() => { window.location.href = "/editor/"+props.draft._id  /* "/editor/"+props.draft._id) */}}>
-        <td>
+    <tr>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}}>
             {
                 (props.draft.draft_description) ? props.draft.draft_description : "No Description. Bummer"
             }
         </td>
-        <td style={{"textAlign" : "right"}}>{props.draft.current_word_count}</td>
-        <td style={{"textAlign" : "right"}}>{props.draft.target_word_count}</td>
-        <td style={{"textAlign" : "right"}}>{Math.round((props.draft.current_word_count / ((props.draft.target_word_count) ? props.draft.target_word_count : 1)) * 100, 2)}</td>
-        <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.createdAt))} </td>
-        <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.updatedAt))} </td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{props.draft.current_word_count}</td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{props.draft.target_word_count}</td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{Math.round((props.draft.current_word_count / ((props.draft.target_word_count) ? props.draft.target_word_count : 1)) * 100, 2)}</td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.createdAt))} </td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.updatedAt))} </td>
         <td style={{"textAlign" : "center"}}>
         <OverlayTrigger
             placement="bottom"
@@ -51,7 +51,7 @@ export default class DraftsList extends Component {
     }
 
     loadDrafts() {
-        axios.get('http://192.168.86.248:5000/drafts/')
+        axios.get(`${ConfigDetails().backend_uri}drafts/`)
             .then(response => {
                 this.setState({ drafts: response.data });
             })
@@ -61,7 +61,7 @@ export default class DraftsList extends Component {
     }
 
     deleteDraft(id) {
-        axios.post('http://192.168.86.248:5000/drafts/trash/' + id)
+        axios.post(`${ConfigDetails().backend_uri}drafts/trash/`+ id)
             .then(res => console.log(res.data))
             .catch((error) => console.log(error));
         

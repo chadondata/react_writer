@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import axios from 'axios'
+import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint`
 
 export default class CreateUser extends Component {
     onChangeUserName(e) {
@@ -14,8 +15,7 @@ export default class CreateUser extends Component {
         const new_user = {
             user_name : this.state.user_name
         };
-
-        axios.post('http://192.168.86.248:5000/users/add', new_user)
+        axios.post(`${ConfigDetails().backend_uri}users/add`, new_user)
             .then(res => console.log(res.data));
 
         this.setState({

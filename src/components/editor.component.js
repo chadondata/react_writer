@@ -4,6 +4,7 @@ import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw } from 'dr
 import Button from 'react-bootstrap/Button'
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import axios from 'axios';
+import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint/`
 
 import 'draft-js/dist/Draft.css';
 
@@ -39,7 +40,7 @@ export default class MyEditor extends Component {
     componentDidMount() {
         console.log('Found id ' + this.props.match.params.id)
         if(this.props.match.params.id) {
-            axios.get(`http://192.168.86.248:5000/drafts/${this.props.match.params.id}`)
+            axios.get(`${ConfigDetails().backend_uri}drafts/${this.props.match.params.id}`)
                 .then(response => {
                     
                     const raw_content = response.data.content;
@@ -123,10 +124,10 @@ export default class MyEditor extends Component {
             };
 
             if(!this.state.id) {
-                axios.post('http://192.168.86.248:5000/drafts/add', save_structure)
+                axios.post(`${ConfigDetails().backend_uri}drafts/add`, save_structure)
                     .then(res => this.setState({id : res.data}, this.toggle_saving));
             } else {
-                axios.post('http://192.168.86.248:5000/drafts/update/' + this.state.id, save_structure)
+                axios.post(`${ConfigDetails().backend_uri}drafts/update` + this.state.id, save_structure)
                     .then(this.toggle_saving);
             }
         });
@@ -239,13 +240,13 @@ export default class MyEditor extends Component {
     }
 
     handleHTMLDownload = () => {
-        const element = document.createElement('a');
+        /*const element = document.createElement('a');
         const contents = `Peep this h*ckin masterpiece by ${this.state.user}
         Created on ${this.state.date_started}
         Last modified on ${this.state.last_modified_date}
         Downloaded on ${new Date()}
         Has completed ${this.state.current_word_count} out of ${this.state.target_word_count} words.
-        Okay, so here starts the good part: `
+        Okay, so here starts the good part: `*/
         
 
     }
