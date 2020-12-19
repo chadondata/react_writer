@@ -7,6 +7,7 @@ import axios from 'axios';
 import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint/`
 
 import 'draft-js/dist/Draft.css';
+import '../App.css';
 
 
 export default class MyEditor extends Component {
@@ -68,10 +69,10 @@ export default class MyEditor extends Component {
                     this.recalculateStatistics();
                 })
                 .then(() => {
-                    this.interval = setInterval(() => this.auto_save(), 10000);
+                    this.interval = setInterval(() => this.auto_save(), 3000);
                 })
         } else {
-            this.interval = setInterval(() => this.auto_save(), 10000);
+            this.interval = setInterval(() => this.auto_save(), 3000);
         }
     }
 
@@ -127,7 +128,7 @@ export default class MyEditor extends Component {
                 axios.post(`${ConfigDetails().backend_uri}drafts/add`, save_structure)
                     .then(res => this.setState({id : res.data}, this.toggle_saving));
             } else {
-                axios.post(`${ConfigDetails().backend_uri}drafts/update` + this.state.id, save_structure)
+                axios.post(`${ConfigDetails().backend_uri}drafts/update/${this.state.id}`, save_structure)
                     .then(this.toggle_saving);
             }
         });
@@ -178,6 +179,7 @@ export default class MyEditor extends Component {
 
     toggle_fullscreen = () => {
         const element = document.getElementById('editor');
+        const edit = document.getElementById('entry');
         if(!this.state.full_screen) {
 
             if (element.requestFullscreen) {
@@ -187,6 +189,7 @@ export default class MyEditor extends Component {
             } else if (element.msRequestFullscreen) {
                 element.msRequestFullscreen()
             }
+            console.log(edit);
         } else {
             if(document.exitFullscreen) document.exitFullscreen();
             else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
@@ -275,7 +278,7 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
     
     render() {
         return ( 
-            <div className="container-fluid bg- text-dark" id="editor">
+            <div className="container-fluid text-dark" id="editor">
                     <div className="btn-group">
                         <Button href="/write" variant="dark"><MdCreate /> New</Button>
                         {this.render_save()}
@@ -288,35 +291,36 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
                     </div> 
                     <div className="mt-2 form-row">
                         <div className="form-group col-md-8">
-                                <label>Give your materpiece a h*ckin description </label>
-                                <input type="text"
-                                    required
-                                    className="form-control"
-                                    value={this.state.description}
-                                    onChange={this.handleDescriptionChange}
-                                    placeholder="Go ahead and type. It's kay."
-                                />
-                            </div>
-                            <div className="form-group col-md-4">
-                                <label>How many words in this jam?</label>
-                                <input type="text"
-                                    required
-                                    className="form-control"
-                                    value={this.state.target_word_count}
-                                    onChange={this.handleTargetWordCountChange}
-                                />
-                            </div>
+                            <label>Give your materpiece a h*ckin description </label>
+                            <input type="text"
+                                required
+                                className="form-control"
+                                value={this.state.description}
+                                onChange={this.handleDescriptionChange}
+                                placeholder="Go ahead and type. It's kay."
+                            />
                         </div>
+                        <div className="form-group col-md-4">
+                            <label>How many words in this jam?</label>
+                            <input type="text"
+                                required
+                                className="form-control"
+                                value={this.state.target_word_count}
+                                onChange={this.handleTargetWordCountChange}
+                            />
+                        </div>
+                    </div>
                      
-                    <div className="shadow editors bg-light text-dark" >
+                    <div id="entry" className="shadow editors bg-light text-dark pt-3" >
                             <Editor editorState={this.state.editorState} handleKeyCommand={this.handleKeyCommand} onChange={this.onChange} placeholder="Start h*ckin writing here!!"/>
                     </div>
-                    <div className="container pt-3 text-secondary text-right">
+                    <div className="container pt-3 text-secondary bg-light text-right">
                         Word Count: {this.state.current_word_count} / {this.state.target_word_count} ( { Math.round(this.state.percent_complete*100, 2) }%)
                     </div>    
-                    <div>
+                    <div className="container pt-3">
                         <ProgressBar now={Math.round(this.state.percent_complete*100)} label={`${Math.round(this.state.percent_complete*100, 2)}%`} />
-                    </div>         
+                    </div> 
+    
             </div>
         );
     }

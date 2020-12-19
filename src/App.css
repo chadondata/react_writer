@@ -1,63 +1,38 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.editorContainer {
-  padding: 1em;
-  margin: 1em;
-  max-width: 100px !important;
-}
-
 .editors {
-  border: 1px black solid;
   padding: 1em;
-  margin: 1em;
+  margin: auto;
   font-family: 'American Typewriter';
-  max-width: 100px !important;
-  font-size: 90%;
+  padding-bottom: 120px;
+  max-width: 800px;
+  position:relative;
 }
+
+/*
+div.DraftEditor-root {
+  background-color: #fffef7;
+  margin:auto;
+  box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.5);
+  max-width: 800px !important;
+  overflow-y: scroll;
+  padding:20px;
+}
+*/
 
 div.DraftEditor-root {
   background-color: #fffef7;
-  width:80%;
-  margin:auto;
-  box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.5);
-  height:300px;
-  overflow-y: scroll;
-  padding:20px;
+  font-family: 'American Typewriter';
+  max-height: 500px;
+  max-width: 800px;
+  overflow-y: auto;
+}
+div.DraftEditor-editorContainer,
+div.public-DraftEditor-content {
+  height: 100%;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
 }
