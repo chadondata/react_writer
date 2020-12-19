@@ -1,7 +1,11 @@
 import React, {Component}from 'react';
-import {MdSave, MdFolderOpen, MdCreate, MdCheckBox, MdCheckBoxOutlineBlank, MdFileDownload, MdFullscreen, MdFullscreenExit } from 'react-icons/md';
+import {MdSave, MdClose, MdCreate, MdCheckBox, MdCheckBoxOutlineBlank, MdFileDownload, MdFullscreen, MdFullscreenExit } from 'react-icons/md';
 import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw } from 'draft-js';
-import Button from 'react-bootstrap/Button'
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+//import DropdownButton from 'react-bootstrap/DropdownButton';
+//import Dropdown from 'react-bootstrap/Dropdown';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import axios from 'axios';
 import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint/`
@@ -279,16 +283,18 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
     render() {
         return ( 
             <div className="container-fluid text-dark" id="editor">
-                    <div className="btn-group">
+                <ButtonToolbar className="mb-3">
+                    <ButtonGroup size="sm">
                         <Button href="/write" variant="dark"><MdCreate /> New</Button>
                         {this.render_save()}
                         <Button onClick={this.toggle_auto_save} variant={(this.state.auto_save) ? "primary" : "danger"} >
                             {this.render_auto_save()} Autosave
                         </Button>
-                        <Button variant="dark" href='/'><MdFolderOpen /> Open</Button>
                         {this.render_fullscreen()}
                         <Button onClick={this.handleDownload} variant="dark"><MdFileDownload /> Download</Button>
-                    </div> 
+                        <Button variant="dark" href='/'><MdClose /> Close</Button>
+                    </ButtonGroup> 
+                </ButtonToolbar>
                     <div className="mt-2 form-row">
                         <div className="form-group col-md-8">
                             <label>Give your materpiece a h*ckin description </label>
