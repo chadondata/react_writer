@@ -4,8 +4,6 @@ import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw } from 'dr
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
-//import DropdownButton from 'react-bootstrap/DropdownButton';
-//import Dropdown from 'react-bootstrap/Dropdown';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import axios from 'axios';
 import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint/`
