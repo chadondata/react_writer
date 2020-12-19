@@ -39,7 +39,7 @@ export default class MyEditor extends Component {
     componentDidMount() {
         console.log('Found id ' + this.props.match.params.id)
         if(this.props.match.params.id) {
-            axios.get(`http://192.168.1.10:5000/drafts/${this.props.match.params.id}`)
+            axios.get(`http://192.168.86.248:5000/drafts/${this.props.match.params.id}`)
                 .then(response => {
                     
                     const raw_content = response.data.content;
@@ -123,10 +123,10 @@ export default class MyEditor extends Component {
             };
 
             if(!this.state.id) {
-                axios.post('http://192.168.1.10:5000/drafts/add', save_structure)
+                axios.post('http://192.168.86.248:5000/drafts/add', save_structure)
                     .then(res => this.setState({id : res.data}, this.toggle_saving));
             } else {
-                axios.post('http://192.168.1.10:5000/drafts/update/' + this.state.id, save_structure)
+                axios.post('http://192.168.86.248:5000/drafts/update/' + this.state.id, save_structure)
                     .then(this.toggle_saving);
             }
         });
@@ -178,6 +178,7 @@ export default class MyEditor extends Component {
     toggle_fullscreen = () => {
         const element = document.getElementById('editor');
         if(!this.state.full_screen) {
+
             if (element.requestFullscreen) {
                 element.requestFullscreen();
             } else if (element.webkitRequestFullscreen) {
@@ -238,6 +239,14 @@ export default class MyEditor extends Component {
     }
 
     handleHTMLDownload = () => {
+        const element = document.createElement('a');
+        const contents = `Peep this h*ckin masterpiece by ${this.state.user}
+        Created on ${this.state.date_started}
+        Last modified on ${this.state.last_modified_date}
+        Downloaded on ${new Date()}
+        Has completed ${this.state.current_word_count} out of ${this.state.target_word_count} words.
+        Okay, so here starts the good part: `
+        
 
     }
 
@@ -265,7 +274,7 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
     
     render() {
         return ( 
-            <div className="container-fluid bg-light text-dark" id="editor">
+            <div className="container-fluid bg- text-dark" id="editor">
                     <div className="btn-group">
                         <Button href="/write" variant="dark"><MdCreate /> New</Button>
                         {this.render_save()}
@@ -297,8 +306,8 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
                                 />
                             </div>
                         </div>
-                    
-                    <div className="shadow editors container-fluid">
+                     
+                    <div className="shadow editors bg-light text-dark" >
                             <Editor editorState={this.state.editorState} handleKeyCommand={this.handleKeyCommand} onChange={this.onChange} placeholder="Start h*ckin writing here!!"/>
                     </div>
                     <div className="container pt-3 text-secondary text-right">

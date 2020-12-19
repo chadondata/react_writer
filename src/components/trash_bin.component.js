@@ -65,7 +65,7 @@ export default class TrashedDraftsList extends Component {
     }
 
     loadDrafts() {
-        axios.get('http://192.168.1.10:5000/drafts/bin/')
+        axios.get('http://192.168.86.248:5000/drafts/bin/')
             .then(response => {
                 this.setState({ drafts: response.data });
             })
@@ -75,7 +75,7 @@ export default class TrashedDraftsList extends Component {
     }
 
     deleteDraft(id) {
-        axios.delete('http://192.168.1.10:5000/drafts/' + id)
+        axios.delete('http://192.168.86.248:5000/drafts/' + id)
             .then(res => console.log(res.data))
             .catch((error) => console.log(error));
         
@@ -85,7 +85,7 @@ export default class TrashedDraftsList extends Component {
     }
 
     restoreDraft(id) {
-        axios.post('http://192.168.1.10:5000/drafts/restore/' + id)
+        axios.post('http://192.168.86.248:5000/drafts/restore/' + id)
             .then(res => console.log(res.data))
             .catch((error) => console.log(error));
         

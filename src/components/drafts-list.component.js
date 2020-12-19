@@ -1,28 +1,20 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import {MdDelete, MdFolderOpen, MdSort } from 'react-icons/md';
+import {MdDelete, MdSort } from 'react-icons/md';
 import { IoMdTrash } from 'react-icons/io'
 import Button from 'react-bootstrap/Button';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import axios from 'axios';
 import { Container, Row, Col } from 'react-bootstrap';
 
-const renderEditTooltip = (props) => (
-    <Tooltip id="button-tooltip" {...props}>
-      Add some words to this, foo.
-    </Tooltip>
-  );
+
 const renderDeleteTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       Put this in the bin.
     </Tooltip>
-  );
-
-
-
+);
 
 const Draft= props => (
-    <tr>
+    <tr onClick={() => { window.location.href = "/editor/"+props.draft._id  /* "/editor/"+props.draft._id) */}}>
         <td>
             {
                 (props.draft.draft_description) ? props.draft.draft_description : "No Description. Bummer"
@@ -34,14 +26,6 @@ const Draft= props => (
         <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.createdAt))} </td>
         <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.updatedAt))} </td>
         <td style={{"textAlign" : "center"}}>
-        <OverlayTrigger
-            placement="bottom"
-            delay={{ show: 250, hide: 400 }}
-            overlay={renderEditTooltip}
-        >
-            <Button variant="success" href={"/editor/"+props.draft._id} ><MdFolderOpen /></Button> 
-        </OverlayTrigger>
-        
         <OverlayTrigger
             placement="bottom"
             delay={{ show: 250, hide: 400 }}
@@ -67,7 +51,7 @@ export default class DraftsList extends Component {
     }
 
     loadDrafts() {
-        axios.get('http://192.168.1.10:5000/drafts/')
+        axios.get('http://192.168.86.248:5000/drafts/')
             .then(response => {
                 this.setState({ drafts: response.data });
             })
@@ -77,7 +61,7 @@ export default class DraftsList extends Component {
     }
 
     deleteDraft(id) {
-        axios.post('http://192.168.1.10:5000/drafts/trash/' + id)
+        axios.post('http://192.168.86.248:5000/drafts/trash/' + id)
             .then(res => console.log(res.data))
             .catch((error) => console.log(error));
         
@@ -163,7 +147,7 @@ export default class DraftsList extends Component {
                 </Container>
                 
                 <div className='table-responsive'>
-                    <table className="table">
+                    <table className="table table-hover">
                         <thead className="thead-light">
                             <tr>
                                 <th>Description <MdSort onClick={this.sortDescription} /></th>

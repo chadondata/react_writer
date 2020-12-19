@@ -21,7 +21,6 @@ router.route('/add').post((req, res) => {
         , content
         , date_trashed
     });
-
     new_draft.save()
         .then(() => res.json(new_draft.id))
         .catch(err => {
