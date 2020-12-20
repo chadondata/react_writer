@@ -15,13 +15,11 @@ mongoose.connect(uri, { useNewUrlParser: true, useCreateIndex: true, useUnifiedT
 const connection = mongoose.connection;
 
 connection.once('open', () => {
-    console.log("MongoDB database connected");
+    console.log("MongoDB database connected"); 
 });
 
-const users_router = require ('./routes/users');
 const drafts_router = require ('./routes/drafts');
 
-app.use('/users', users_router);
 app.use('/drafts', drafts_router);
 
 app.listen(port, () => {

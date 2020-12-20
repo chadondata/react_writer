@@ -1,46 +1,43 @@
 import React, { Component } from 'react';
+import {MdDelete, MdSort } from 'react-icons/md';
+import { IoMdTrash } from 'react-icons/io'
 import Button from 'react-bootstrap/Button';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-
-import {MdDelete, MdRestore, MdSort} from 'react-icons/md';
 import axios from 'axios';
-
+import { Container, Row, Col } from 'react-bootstrap';
 import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint/`
+import { withOktaAuth } from '@okta/okta-react';
 
-
-const renderRestoreTooltip = (props) => (
-    <Tooltip id="button-tooltip" {...props}>
-      Restore this ish.
-    </Tooltip>
-  );
 const renderDeleteTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
-      Delete this fool forever. Sad face.
+      Put this in the bin.
     </Tooltip>
-  );
+);
+
+async function checkUser() {
+    if(this.props.authState.isAuthenticated && !this.state.user) {
+        if(this._isMounted) {
+            this.setState({
+                user : this.props.authState.idToken.claims.email
+                , name : this.props.authState.idToken.claims.name
+            });
+        }
+    }
+}
 
 const Draft= props => (
     <tr>
-        <td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}}>
             {
                 (props.draft.draft_description) ? props.draft.draft_description : "No Description. Bummer"
             }
         </td>
-        <td style={{"textAlign" : "right"}}>{props.draft.current_word_count}</td>
-        <td style={{"textAlign" : "right"}}>{props.draft.target_word_count}</td>
-        <td style={{"textAlign" : "right"}}>{Math.round((props.draft.current_word_count / ((props.draft.target_word_count) ? props.draft.target_word_count : 1)) * 100, 2)}</td>
-        <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.createdAt))} </td>
-        <td style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.updatedAt))} </td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{props.draft.current_word_count}</td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{props.draft.target_word_count}</td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{Math.round((props.draft.current_word_count / ((props.draft.target_word_count) ? props.draft.target_word_count : 1)) * 100, 2)}</td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.createdAt))} </td>
+        <td onClick={() => { window.location.href = "/editor/"+props.draft._id}} style={{"textAlign" : "right"}}>{Intl.DateTimeFormat(navigator.language, { year: 'numeric', month: 'numeric', day: 'numeric', hour:'numeric', minute:'numeric' }).format(new Date(props.draft.updatedAt))} </td>
         <td style={{"textAlign" : "center"}}>
-        
-        <OverlayTrigger
-            placement="bottom"
-            delay={{ show: 250, hide: 400 }}
-            overlay={renderRestoreTooltip}
-        >
-            <Button variant="success" onClick={() => { props.restoreDraft(props.draft._id) }}> <MdRestore /></Button> 
-        </OverlayTrigger>
-        
         <OverlayTrigger
             placement="bottom"
             delay={{ show: 250, hide: 400 }}
@@ -53,31 +50,50 @@ const Draft= props => (
     </tr>
 )
 
-export default class TrashedDraftsList extends Component {
+export default withOktaAuth(class SecureDraftsList extends Component {
+    _isMounted = false;
+    _loaded = false;
+
     constructor(props) {
         super(props);
         this.deleteDraft = this.deleteDraft.bind(this);
-        this.restoreDraft = this.restoreDraft.bind(this);
+        this.checkUser = checkUser.bind(this)
         this.state = { drafts : [] };
         
     }
 
     componentDidMount() {
+        this._isMounted = true;
+        this.checkUser();
         this.loadDrafts();
     }
 
-    loadDrafts() {
-        axios.get(`${ConfigDetails().backend_uri}drafts/bin/`)
-            .then(response => {
-                this.setState({ drafts: response.data });
-            })
-            .catch((error) => {
-                console.log(error);
-            });
+    componentWillUnmount() {
+        this._isMounted = false;
+    }
+
+    componentDidUpdate() {
+        this._isMounted = true;
+        this.checkUser();
+        this.loadDrafts();
+    }
+
+    loadDrafts() { 
+        console.log(this.state); 
+        if(!this._loaded) {
+            axios.get(`${ConfigDetails().backend_uri}drafts/list/` + this.state.user)
+                .then(response => {
+                    this.setState({ drafts: response.data });
+                    this._loaded = true
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
     }
 
     deleteDraft(id) {
-        axios.delete(`${ConfigDetails().backend_uri}drafts/${id}`)
+        axios.post(`${ConfigDetails().backend_uri}drafts/trash/`+ id)
             .then(res => console.log(res.data))
             .catch((error) => console.log(error));
         
@@ -85,21 +101,10 @@ export default class TrashedDraftsList extends Component {
             drafts : this.state.drafts.filter(d => d._id !== id)
         });
     }
-
-    restoreDraft(id) {
-        axios.post(`${ConfigDetails().backend_uri}drafts/restore/${id}`)
-            .then(res => console.log(res.data))
-            .catch((error) => console.log(error));
-        
-        this.setState({ 
-            drafts : this.state.drafts.filter(d => d._id !== id)
-        });
-    }
-
 
     draftsList() {
         return this.state.drafts.map(current_draft => { 
-            return <Draft draft={current_draft} deleteDraft={this.deleteDraft} restoreDraft={this.restoreDraft} key={current_draft._id}/>;
+            return <Draft draft={current_draft} deleteDraft={this.deleteDraft} key={current_draft._id}/>;
         })
     } 
 
@@ -166,9 +171,15 @@ export default class TrashedDraftsList extends Component {
     render() {
         return (
             <div>
-                <h3>Here's all the drafts that didn't make the cut.</h3>
+                <Container fluid>
+                    <Row>
+                        <Col sm={10}><h3>{this.state.name}'s h*ckin ossum drafts</h3></Col>
+                        <Col sm={2}><Button href="/bin" variant='light'><IoMdTrash /> View the Bin</Button></Col>
+                    </Row>
+                </Container>
+                
                 <div className='table-responsive'>
-                    <table className="table">
+                    <table className="table table-hover">
                         <thead className="thead-light">
                             <tr>
                                 <th>Description <MdSort onClick={this.sortDescription} /></th>
@@ -188,4 +199,4 @@ export default class TrashedDraftsList extends Component {
             </div>
         ) 
     }
-}
+});

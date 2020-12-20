@@ -29,16 +29,16 @@ router.route('/add').post((req, res) => {
         });
 });
 
-router.route('/').get((req, res) => {
-    Draft.find({date_trashed : null}).select("-content")
+router.route('/list/:email').get((req, res) => {
+    Draft.find({date_trashed : null, user_email : req.params.email}).select("-content")
         .then(drafts => {
             res.json(drafts);
         })
         .catch(err => res.status(400).json('Error ' + err));
 });
 
-router.route('/bin').get((req, res) => {
-    Draft.find({date_trashed : { $ne: null }}).select("-content")
+router.route('/bin/:email').get((req, res) => {
+    Draft.find({date_trashed : { $ne: null }, user_email : req.params.email}).select("-content")
         .then(drafts => {
             res.json(drafts);
         })
@@ -48,7 +48,6 @@ router.route('/bin').get((req, res) => {
 router.route('/:id').get((req, res) => {
     Draft.findById(req.params.id)
         .then(draft => {
-            //console.log(JSON.stringify(draft));
             res.json(draft);
         })
         .catch(err => res.status(400).json('Error: ' + err));

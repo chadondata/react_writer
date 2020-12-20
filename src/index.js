@@ -1,14 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter } from 'react-router-dom';
+//import { Security } from '@okta/okta-react';
+
+// import App from './App';
+import SecureApp from './SecureApp';
+
+
+/* const config = {
+  clientId: '0oa1lnc62dSIscQOW4x7',
+  issuer: 'https://dev-597434.okta.com/oauth2/default',
+  redirectUri: 'http://localhost:3000/login/callback',
+  scopes: ['openid', 'profile', 'email'],
+  pkce: true
+};
+*/
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  <BrowserRouter>
+      <SecureApp />
+  </BrowserRouter>
+  ,  document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function

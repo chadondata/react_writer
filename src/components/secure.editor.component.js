@@ -7,14 +7,28 @@ import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import axios from 'axios';
 import ConfigDetails from '../config/config' // `${ConfigDetails().backend_uri}endpoint/`
+import { withOktaAuth } from '@okta/okta-react';
 
 import 'draft-js/dist/Draft.css';
 import '../App.css';
 
+async function checkUser() {
+    if(this.props.authState.isAuthenticated && !this.state.user) {
+        if(this._isMounted) {
+            this.setState({
+                user : this.props.authState.idToken.claims.email
+            });
+        }
+    }
+}
 
-export default class MyEditor extends Component {
+export default withOktaAuth(class SecureEditor extends Component {
+    _isMounted = false;
+
     constructor(props) {
         super(props);
+
+        this.checkUser = checkUser.bind(this);
          
         this.state = {
             editorState : EditorState.createEmpty()
@@ -24,7 +38,7 @@ export default class MyEditor extends Component {
             , percent_complete : 0
             , date_started : new Date()
             , last_modified_date : new Date()
-            , user : "NihilisticFurniture"
+            //, user : "NihilisticFurniture"
             , id : this.props.match.params.id
             // These props are used for the auto save feature
             , auto_save : true
@@ -40,8 +54,7 @@ export default class MyEditor extends Component {
         this.handleKeyCommand = this.handleKeyCommand.bind(this);
     }
 
-    componentDidMount() {
-        console.log('Found id ' + this.props.match.params.id)
+    async componentDidMount() {
         if(this.props.match.params.id) {
             axios.get(`${ConfigDetails().backend_uri}drafts/${this.props.match.params.id}`)
                 .then(response => {
@@ -76,11 +89,19 @@ export default class MyEditor extends Component {
         } else {
             this.interval = setInterval(() => this.auto_save(), 3000);
         }
+        this._isMounted = true;
+        this.checkUser();
     }
 
     componentWillUnmount() {
         clearInterval(this.interval);
-      }
+        this._isMounted = false;
+    }
+
+    async componentDidUpdate() {
+        this._isMounted = true;
+        this.checkUser();
+    }
 
     handleChange = (es) => {
         this.setState({
@@ -329,4 +350,4 @@ ${this.state.editorState.getCurrentContent().getPlainText('')}`
         );
     }
 
-}
+});
